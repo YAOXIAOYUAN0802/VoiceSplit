@@ -152,14 +152,7 @@ This repository ships code only — see LICENSE.
   convention gain nothing from the prior.
 - CPU only, no GPU acceleration. A 3–4 minute song takes roughly 4–8 minutes.
 
-## Contributors
 
-See [CONTRIBUTORS.md](CONTRIBUTORS.md).
-
-- **YAOXIAOYUAN0802** — project owner: requirements, acceptance criteria, real-world testing
-- **DeepSeek Harness** (AI pair programmer) — architecture and implementation
-
-## License
 
 MIT (covers this repository's code only).
 
