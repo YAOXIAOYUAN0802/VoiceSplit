@@ -152,6 +152,13 @@ This repository ships code only — see LICENSE.
   convention gain nothing from the prior.
 - CPU only, no GPU acceleration. A 3–4 minute song takes roughly 4–8 minutes.
 
+## Contributors
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md).
+
+- **YAOXIAOYUAN0802** — project owner: requirements, acceptance criteria, real-world testing
+- **DeepSeek Harness** (AI pair programmer) — architecture and implementation
+
 ## License
 
 MIT (covers this repository's code only).
@@ -297,6 +304,13 @@ docs/images/            README 配图
 - 除 `isolate` 外，分离质量取决于原曲本身：人声与音乐同时占据同一时频区域时无法干净分离。
 - 5.1 素材依赖一个近似假设——人声主要在中置声道。若混音不遵循该惯例，中置先验会无收益。
 - 无 GPU 加速，纯 CPU 推理；3~4 分钟歌曲约 4~8 分钟。
+
+## 贡献者
+
+见 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
+
+- **YAOXIAOYUAN0802** —— 项目发起人：需求、验收标准、真实素材实测
+- **DeepSeek Harness**（AI 协作代理）—— 架构设计与代码实现
 
 ## License
 

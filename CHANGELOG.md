@@ -4,6 +4,9 @@
 
 ### 工程化
 
+- 新增 `CONTRIBUTORS.md`，并在 README 中英两节各加入「贡献者」章节；同时把历史提交的作者
+  统一改为项目发起人的 GitHub 身份，使其在 GitHub 上正确计入贡献（原先使用占位邮箱，
+  提交不计入任何账号）。
 - 删除 `run_selftest.bat`：它只是 `python gui.py --selftest` 的 Windows 包装，且本仓库是
   源码仓库而非打包版，无人引用。
 - 图形界面说明由 `docs/使用说明（图形界面）.md` 重写为 `docs/gui-guide.md`：原文档内容已过期
