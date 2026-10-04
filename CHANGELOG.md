@@ -4,8 +4,14 @@
 
 ### 工程化
 
+- 删除 `run_selftest.bat`：它只是 `python gui.py --selftest` 的 Windows 包装，且本仓库是
+  源码仓库而非打包版，无人引用。
+- 图形界面说明由 `docs/使用说明（图形界面）.md` 重写为 `docs/gui-guide.md`：原文档内容已过期
+  （只列了 3 个模型档位、缺三档强度与多声道先验），且中文文件名会让 GitHub 页面变成"下载文件"；
+  现已改为英文在前、中文在后的中英双语，并补齐全部控件说明。
 - README 改为英文在前、中文在后（GitHub 访客优先看到英文），并补上英文的强度对比、
   模型来源与限制说明。
+- 新增 README 配图（波形 / 频谱，内置合成示例，`scripts/make_figures.py` 可复现）。
 - 新增 GitHub Actions（`.github/workflows/tests.yml`）：push / PR 时在 Linux 上装 ffmpeg、
   跑测试。模型不入库，因此 CI 用 `tests/test_core.py --allow-no-models` 跳过模型相关用例，
   只验证代码链路；若运行环境里检测到模型则自动跑全量测试。

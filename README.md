@@ -47,7 +47,7 @@ GUI:
 python gui.py
 ```
 
-> Widget-by-widget guide (including the packaged .exe): [docs/使用说明（图形界面）.md](docs/使用说明（图形界面）.md)
+> Widget-by-widget guide (including the packaged .exe): [docs/gui-guide.md](docs/gui-guide.md)
 
 Self-check (verifies ffmpeg, models, inference chain, and runs a full pass):
 
@@ -127,6 +127,7 @@ scripts/demo_strength.py       objective comparison across the three strength le
 scripts/make_figures.py        regenerate the README figures from a synthetic demo
 scripts/make_icon.py           generate the app icon
 tests/test_core.py             synthetic self-check
+docs/gui-guide.md              widget-by-widget GUI guide (EN + 中文)
 docs/images/                   README figures (generated, safe to regenerate)
 ```
 
@@ -203,7 +204,7 @@ python gui.py
 ```
 
 > 图形界面各控件的详细说明（含打包成 exe 后的使用方式）见
-> [docs/使用说明（图形界面）.md](docs/使用说明（图形界面）.md)。
+> [docs/gui-guide.md](docs/gui-guide.md)。
 
 自检（逐项检查 ffmpeg、模型、推理链路，并跑一遍完整流程）：
 
@@ -274,8 +275,11 @@ scripts/download_models.py   模型下载（带 SHA256 校验，镜像回退）
 scripts/publish_models.py    把模型权重发布为 GitHub Release 附件
 scripts/build_exe.py    打包为 exe（PyInstaller）
 scripts/demo_strength.py     三档强度对比实验，输出客观指标
+scripts/make_figures.py 生成 README 配图（合成示例，可复现）
 scripts/make_icon.py    生成程序图标
 tests/test_core.py      合成信号自检
+docs/gui-guide.md       图形界面逐控件说明（中英双语）
+docs/images/            README 配图
 ```
 
 ## 模型来源与许可证
