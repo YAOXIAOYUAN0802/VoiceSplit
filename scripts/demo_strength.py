@@ -42,6 +42,10 @@ def main():
     if not os.path.exists(src):
         print("找不到文件：%s" % src)
         return 1
+    if not any(core.resolve_model(v) and core.resolve_model(i)
+               for v, i in core.MODEL_SETS.values()):
+        print("模型缺失，请先运行：python scripts/download_models.py")
+        return 1
 
     ref, _ = core.read_audio(src, start=start, dur=dur)
     lo_ref, mid_ref = band_rms(ref, 30, 120), band_rms(ref, 300, 3000)
