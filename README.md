@@ -309,8 +309,8 @@ docs/images/            README 配图
 
 见 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
 
-- **YAOXIAOYUAN0802** —— 项目发起人：需求、验收标准、真实素材实测
-- **DeepSeek Harness**（AI 协作代理）—— 架构设计与代码实现
+- **YAOXIAOYUAN0802** —— 项目发起人：需求、验收标准、真实素材实测、提供部分代码
+- **DeepSeek Harness**（AI 协作代理）—— 架构设计与部分代码实现与修改代码
 
 ## License
 
