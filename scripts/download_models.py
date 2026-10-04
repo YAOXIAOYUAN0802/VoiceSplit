@@ -9,11 +9,14 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODELS_DIR = os.path.join(ROOT, "models")
 
 REPO_PATH = "Politrees/UVR_resources/resolve/main/models/MDXNet"
-# 官方源在国内常连不上，镜像优先
-BASES = [
+# 下载源按顺序尝试。VOICESPLIT_MODEL_BASE 可指向自建 Release（见 publish_models.py），
+# 例如 https://github.com/<用户名>/<仓库>/releases/download/models-v1/
+# 官方源在国内常连不上，因此镜像优先。
+BASES = [b for b in [
+    os.environ.get("VOICESPLIT_MODEL_BASE", "").strip(),
     "https://hf-mirror.com/" + REPO_PATH + "/",
     "https://huggingface.co/" + REPO_PATH + "/",
-]
+] if b]
 
 MODELS = {
     "Kim_Vocal_2.onnx":

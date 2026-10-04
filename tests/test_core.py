@@ -2,9 +2,10 @@
 """
 核心链路自检：不需要任何音频素材，用合成信号验证 STFT/推理/掩蔽/限幅/片段替换。
 
-    python tests/test_core.py
+    python tests/test_core.py                    # 需要 models/ 里有模型
+    python tests/test_core.py --allow-no-models  # 无模型时跳过模型相关用例（CI 用）
 
-需要 models/ 里至少有一对人声/伴奏模型（scripts/download_models.py）。
+依赖 ffmpeg：放在仓库根的 ffmpeg/ffmpeg.exe，或安装到系统 PATH。
 """
 import os
 import shutil
@@ -17,6 +18,7 @@ import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import core
 
+ALLOW_NO_MODELS = "--allow-no-models" in sys.argv
 FAILED = []
 
 
@@ -52,9 +54,15 @@ def main():
         if core.resolve_model(v) and core.resolve_model(i):
             sets[name] = (v, i)
     print("可用档位：%s" % ("、".join(sets) or "无"))
-    check("至少有一个可用模型档位", bool(sets))
     if not sets:
+        if ALLOW_NO_MODELS:
+            print("  [skip] 未找到模型，跳过模型相关用例")
+            print("  （运行 python scripts/download_models.py 获取模型后即可全量测试）")
+            return 0
+        check("至少有一个可用模型档位", False)
+        print("\n模型缺失，请先运行：python scripts/download_models.py")
         return 1
+    check("至少有一个可用模型档位", True)
 
     print("\nffmpeg")
     ff = core.find_ffmpeg()

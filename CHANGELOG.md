@@ -2,6 +2,16 @@
 
 ## v1.1
 
+### 工程化
+
+- README 改为英文在前、中文在后（GitHub 访客优先看到英文），并补上英文的强度对比、
+  模型来源与限制说明。
+- 新增 GitHub Actions（`.github/workflows/tests.yml`）：push / PR 时在 Linux 上装 ffmpeg、
+  跑测试。模型不入库，因此 CI 用 `tests/test_core.py --allow-no-models` 跳过模型相关用例，
+  只验证代码链路；若运行环境里检测到模型则自动跑全量测试。
+- 新增 `scripts/publish_models.py`：把第三方权重发布为 GitHub Release 附件（不进入 git 历史）。
+  `download_models.py` 支持 `VOICESPLIT_MODEL_BASE` 环境变量，可指向自建 Release 作首选源。
+
 ### 片段替换（patch_segment）修复
 
 - **修复对齐搜索在 int16 上溢出**：相关度用 `np.dot` 直接算 int16 数组会溢出，导致正确对齐

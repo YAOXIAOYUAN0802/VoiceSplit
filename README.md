@@ -1,9 +1,155 @@
-# 人声 / 背景音乐分离工具 / VoiceSplit
+# VoiceSplit
 
-离线运行的人声与伴奏分离工具：内置 MDX-Net 模型，支持多档质量、**纯人声极端隔离**、
-5.1 环绕声源的中置声道先验，以及**片段替换**（把某一小段新音频拼回主音轨，自动对齐）。
+**English** | [中文](#中文文档)
 
-全部在本机 CPU 上推理，不联网、不上传任何文件。
+Offline vocal / accompaniment separation with a GUI. Bundles MDX-Net models, runs entirely
+on local CPU — no network calls, no uploads.
+
+**[中文文档在下半部分 →](#中文文档)**
+
+## Features
+
+- **Two extraction algorithms** — complement (fast) and **masking** (cleaner). Masking turns
+  model output into a 0–1 weight map applied directly to the original spectrum, so
+  low-confidence regions stay in the accompaniment instead of bleeding into the vocal.
+- **Three strength levels** — `normal` / `strong` / `isolate`. `isolate` runs a second
+  iterative pass; measured background-music residue on a full song drops to **0.24%**.
+- **Multichannel aware** — detects 5.1/7.1 sources and uses the center channel as a prior
+  (surround mixes usually put vocals in the center). Biggest win on loud-backing-track songs.
+- **Automatic model adaptation** — derives FFT parameters from each ONNX input shape, so
+  models with different window sizes (6144 / 5120 / 4096) can be mixed freely.
+- **Segment replacement** — splices a re-processed fragment back into a master track with
+  automatic offset detection (compensates MP3 encoder delay), 20 ms crossfades, and zero
+  changes outside the replaced range.
+
+## Install
+
+Python 3.10+ (developed on 3.12).
+
+```bash
+pip install -r requirements.txt
+python scripts/download_models.py      # downloads models (mirror-first)
+```
+
+ffmpeg: either drop `ffmpeg.exe` into `ffmpeg/` in the repo root, or install it on `PATH`
+(`ffmpeg -version` should work).
+
+## Usage
+
+GUI:
+
+```bash
+python gui.py
+```
+
+> Widget-by-widget guide (including the packaged .exe): [docs/使用说明（图形界面）.md](docs/使用说明（图形界面）.md)
+
+Self-check (verifies ffmpeg, models, inference chain, and runs a full pass):
+
+```bash
+python gui.py --selftest
+```
+
+As a library:
+
+```python
+import core
+
+# Recommended for songs: masking + vocal-first + extreme isolation
+core.separate(
+    "song.flac", "./out",
+    model_set="标准（推荐）",   # or "人声突显（歌曲）"
+    vocal_boost=True,           # stronger vocal model + center-channel prior
+    strength="isolate",         # normal / strong / isolate
+    fmt=("flac",),
+)
+```
+
+## Choosing a strength level
+
+Measured on a full 3:45 song:
+
+| Strength | Background-music residue | Vocal-band retention | Runtime |
+|---|---|---|---|
+| `normal` | 12.1% | 81% | ~4 min |
+| `strong` | 1.2% | 57% | ~4 min |
+| `isolate` | **0.24%** | 59% | ~8 min |
+
+*Residue* = vocal-track energy at 30–120 Hz ÷ original energy in the same band (vocals have
+almost no low end, so lower is cleaner). *Retention* = vocal-track energy at 300–3000 Hz ÷
+original in the same band.
+
+**Trade-off**: `isolate` and `strong` gate down time frames with low vocal probability
+(interludes, breaths, breathy tails), which sounds drier and choppier. When vocals and music
+occupy the same time-frequency region (chorus with strings), the model cannot separate them —
+an aggressive threshold will cut vocals too. Fall back to `normal` there.
+
+## Model tiers
+
+| Tier | Vocal model | Accompaniment model |
+|---|---|---|
+| 标准（推荐） | Kim_Vocal_2 | UVR-MDX-NET-Inst_HQ_3 |
+| 人声突显（歌曲） | kuielab_b_vocals | UVR-MDX-NET-Inst_HQ_3 |
+| 高精度 | UVR-MDX-NET-Voc_FT | UVR-MDX-NET-Inst_HQ_4 |
+| 轻量快速 | Kim_Vocal_2 | UVR-MDX-NET-Inst_Main |
+
+Drop any MDX-Net `.onnx` into `models/` to extend the list (a vocal/accompaniment pair is
+required for a tier to show up).
+
+## Output convention
+
+- Both stems are true-peak limited to about −1.4 dBTP; no clipped samples. Default output
+  gain 0.95 (adjustable).
+- Vocal + accompaniment sums back to the original down to quantization noise
+  (mean deviation < 0.5 LSB).
+- The last ~0.04 s and the first 50 ms are algorithmic fade regions.
+
+## Project layout
+
+```
+core.py                        separation core: STFT / inference / masking / limiting / segment splice
+gui.py                         tkinter GUI + --selftest
+scripts/download_models.py     model download (SHA256 verified, mirror fallback)
+scripts/publish_models.py      publish weights as GitHub Release assets
+scripts/build_exe.py           package as a Windows .exe (PyInstaller)
+scripts/demo_strength.py       objective comparison across the three strength levels
+scripts/make_icon.py           generate the app icon
+tests/test_core.py             synthetic self-check
+```
+
+## Model provenance and licensing
+
+Weights are third-party and **not shipped in this repository**. Get them with
+`scripts/download_models.py`:
+
+- Kim_Vocal_2 / UVR-MDX-NET-* — trained and released by the
+  [Ultimate Vocal Remover](https://github.com/Anjok07/ultimatevocalremovergui) project
+- kuielab_b_* — KUIELab music separation models
+
+Their licensing status is unclear (the UVR repository does not state a license for the
+weights). Personal study and research use is fine; **confirm rights before commercial use**.
+This repository ships code only — see LICENSE.
+
+## Known limitations
+
+- Separation quality is bounded by the source: when vocals and music overlap in the same
+  time-frequency region, no clean split exists.
+- The 5.1 path assumes vocals are mainly in the center channel. Mixes that break that
+  convention gain nothing from the prior.
+- CPU only, no GPU acceleration. A 3–4 minute song takes roughly 4–8 minutes.
+
+## License
+
+MIT (covers this repository's code only).
+
+---
+
+# 中文文档
+
+**中文** | [English](#voicesplit)
+
+离线运行的人声与伴奏分离工具，带图形界面。内置 MDX-Net 模型，全程本机 CPU 推理，
+不联网、不上传任何文件。
 
 ## 特性
 
@@ -15,7 +161,6 @@
   对"背景音乐太大"的歌曲帮助最大。
 - **自动适配模型**：读取 ONNX 输入形状推导 FFT 参数（6144 / 5120 / 4096 三种模型族混用无碍）。
 - **片段替换**：自动测量对齐偏移（补偿 MP3 编码延时）、20ms 交叉淡化、替换区外零改动。
-- **图形界面 + 命令行自检**，可打包成单文件夹 exe。
 
 ## 安装
 
@@ -103,9 +248,11 @@ core.separate(
 core.py                 分离核心：STFT/推理/掩蔽/限幅/片段替换
 gui.py                  图形界面 + --selftest 自检
 scripts/download_models.py   模型下载（带 SHA256 校验，镜像回退）
+scripts/publish_models.py    把模型权重发布为 GitHub Release 附件
 scripts/build_exe.py    打包为 exe（PyInstaller）
 scripts/demo_strength.py     三档强度对比实验，输出客观指标
 scripts/make_icon.py    生成程序图标
+tests/test_core.py      合成信号自检
 ```
 
 ## 模型来源与许可证
@@ -116,7 +263,7 @@ scripts/make_icon.py    生成程序图标
 - kuielab_b_* ：KUIELab 音乐分离模型
 
 这些权重的授权状态并不明确（UVR 仓库未给出明确的权重许可）。用于个人学习、研究没有问题，
-**商业用途请先自行确认权利**。本仓库只包含代码，代码部分见下方 LICENSE。
+**商业用途请先自行确认权利**。本仓库只包含代码，代码部分见 LICENSE。
 
 ## 已知限制
 

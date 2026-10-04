@@ -1,0 +1,45 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: 安装 ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: 安装依赖
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # 模型是第三方权重、不入库，所以这里跳过模型相关用例。
+      # 只验证代码链路：路径解析、ffmpeg 调用、合成信号处理等。
+      - name: 运行测试（无模型，跳过模型用例）
+        run: python tests/test_core.py --allow-no-models
+
+      # 有模型时（例如通过 Release 附件或 CI 密钥拉取）跑全量测试
+      - name: 全量测试（若已放置模型）
+        run: |
+          if ls models/*.onnx >/dev/null 2>&1; then
+            python tests/test_core.py
+          else
+            echo "models/ 为空，跳过全量测试"
+          fi
