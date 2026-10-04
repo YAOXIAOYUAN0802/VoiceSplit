@@ -7,6 +7,11 @@ on local CPU — no network calls, no uploads.
 
 **[中文文档在下半部分 →](#中文文档)**
 
+![Separation result on the built-in synthetic demo](docs/images/demo_waveform.png)
+
+<sub>Waveform view: the vocal track (red) goes quiet during the instrumental interlude at 2–3 s,
+while the accompaniment (blue) keeps playing. Reproduce with `python scripts/make_figures.py`.</sub>
+
 ## Features
 
 - **Two extraction algorithms** — complement (fast) and **masking** (cleaner). Masking turns
@@ -67,6 +72,12 @@ core.separate(
 
 ## Choosing a strength level
 
+![Spectrogram comparison: original, vocal, accompaniment](docs/images/demo_spectrogram.png)
+
+<sub>Same demo, spectrogram view (log frequency, shared colour scale): the vocal track keeps the
+mid-band harmonics and loses the low-frequency accompaniment, the accompaniment track does the
+reverse. The two sum back to the original.</sub>
+
 Measured on a full 3:45 song:
 
 | Strength | Background-music residue | Vocal-band retention | Runtime |
@@ -113,8 +124,10 @@ scripts/download_models.py     model download (SHA256 verified, mirror fallback)
 scripts/publish_models.py      publish weights as GitHub Release assets
 scripts/build_exe.py           package as a Windows .exe (PyInstaller)
 scripts/demo_strength.py       objective comparison across the three strength levels
+scripts/make_figures.py        regenerate the README figures from a synthetic demo
 scripts/make_icon.py           generate the app icon
 tests/test_core.py             synthetic self-check
+docs/images/                   README figures (generated, safe to regenerate)
 ```
 
 ## Model provenance and licensing
@@ -150,6 +163,11 @@ MIT (covers this repository's code only).
 
 离线运行的人声与伴奏分离工具，带图形界面。内置 MDX-Net 模型，全程本机 CPU 推理，
 不联网、不上传任何文件。
+
+![分离结果（内置合成示例）](docs/images/demo_waveform.png)
+
+<sub>波形视图：2~3 秒的器乐间奏里人声轨（红）安静下来，伴奏轨（蓝）继续；分离效果可用
+`python scripts/make_figures.py` 自行复现。</sub>
 
 ## 特性
 
@@ -209,6 +227,11 @@ core.separate(
 ```
 
 ## 分离强度怎么选
+
+![频谱对比：原曲 / 人声轨 / 伴奏轨](docs/images/demo_spectrogram.png)
+
+<sub>同一示例的频谱视图（对数频率轴，全图共用色标）：人声轨保留中频谐波、失去低频伴奏，
+伴奏轨反之，两者相加可还原原曲。</sub>
 
 整首歌（3:45）实测数据，供取舍参考：
 
