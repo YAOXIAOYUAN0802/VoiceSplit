@@ -1,0 +1,15 @@
+# 模型权重（第三方，不入库，用 scripts/download_models.py 获取）
+models/*.onnx
+models/*.part
+
+# 程序与打包产物
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+
+# 运行输出
+out_demo/
+out/
+*.log
